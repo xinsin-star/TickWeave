@@ -1,4 +1,4 @@
-package top.xinsin.pistondepth.client;
+package top.xinsin.tickweave.client;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -16,12 +16,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 客户端显示配置的唯一数据源。这里没有任何 MaLiLib 类型，所以专用服务器加载
- * 通用模组入口时不会触发客户端 UI 类的链接。配置文件位于 config/piston_depth.json。
+ * 通用模组入口时不会触发客户端 UI 类的链接。配置文件位于 config/tickweave.json。
  * 数值范围同时在读取文件时校验，避免手工编辑文件后把标签放大到不可用的程度。
  */
 public final class ClientSettings {
-    private static final Logger LOGGER = LoggerFactory.getLogger("piston_depth");
-    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("piston_depth.json");
+    private static final Logger LOGGER = LoggerFactory.getLogger("tickweave");
+    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("tickweave.json");
+    // 仅供从旧模组 ID 升级时读取；新配置始终写入 tickweave.json。
+    private static final Path LEGACY_FILE = FabricLoader.getInstance().getConfigDir().resolve("piston_depth.json");
     private static final int[] DEFAULT_DEPTH_COLORS = {
             0xFF73E1FF, 0xFF7DFFA0, 0xFFFFE46C, 0xFFFFAF5B, 0xFFFF7A91, 0xFFD594FF
     };
@@ -60,9 +62,10 @@ public final class ClientSettings {
 
     public static void load() {
         resetToDefaults();
-        if (!Files.isRegularFile(FILE)) return;
+        Path source = Files.isRegularFile(FILE) ? FILE : LEGACY_FILE;
+        if (!Files.isRegularFile(source)) return;
         try {
-            JsonObject json = JsonParser.parseString(Files.readString(FILE, StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonObject json = JsonParser.parseString(Files.readString(source, StandardCharsets.UTF_8)).getAsJsonObject();
             enabled = bool(json, "enabled", enabled);
             showPistonEvents = bool(json, "showPistonEvents", showPistonEvents);
             showWireUpdates = bool(json, "showWireUpdates", showWireUpdates);
@@ -86,8 +89,10 @@ public final class ClientSettings {
             if (json.has("hotkeys") && json.get("hotkeys").isJsonObject()) {
                 hotkeys = json.getAsJsonObject("hotkeys").deepCopy();
             }
+            // 新文件不存在时自动迁移旧设置；保留旧文件，避免影响仍在使用旧版的实例。
+            if (source.equals(LEGACY_FILE)) save();
         } catch (Exception exception) {
-            LOGGER.warn("Could not read {}. Defaults will be used for invalid values.", FILE, exception);
+            LOGGER.warn("Could not read {}. Defaults will be used for invalid values.", source, exception);
         }
     }
 

@@ -1,4 +1,4 @@
-package top.xinsin.pistondepth.mixin;
+package top.xinsin.tickweave.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,5 +15,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(PistonBaseBlock.class)
 public interface PistonPowerAccessor {
     @Invoker("getNeighborSignal")
-    boolean pistonDepth$getNeighborSignal(SignalGetter level, BlockPos pos, Direction facing);
+    boolean tickWeave$getNeighborSignal(SignalGetter level, BlockPos pos, Direction facing);
 }

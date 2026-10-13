@@ -1,4 +1,4 @@
-package top.xinsin.pistondepth.client;
+package top.xinsin.tickweave.client;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
@@ -32,16 +32,16 @@ import net.minecraft.gizmos.TextGizmo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
-import top.xinsin.pistondepth.net.TraceEntry;
-import top.xinsin.pistondepth.net.TracePacket;
-import top.xinsin.pistondepth.net.WireTrace;
+import top.xinsin.tickweave.net.TraceEntry;
+import top.xinsin.tickweave.net.TracePacket;
+import top.xinsin.tickweave.net.WireTrace;
 
 /**
  * 客户端只负责接收和展示，不自行推算活塞深度。权威的事件顺序由服务端采集，
  * 因此单人和多人看到的都是同一套数据。界面文字走 Minecraft 语言资源，
  * 游戏切换语言并完成资源重载后会直接读取新译文，不需要重连或重新执行指令。
  */
-public final class PistonDepthClient implements ClientModInitializer {
+public final class TickWeaveClient implements ClientModInitializer {
     private static final int MAX_TICKS = 40;
     private static final int MAX_INSPECT_LINES = 48;
     private static final NavigableMap<Long, TickTrace> HISTORY = new TreeMap<>();
@@ -67,9 +67,9 @@ public final class PistonDepthClient implements ClientModInitializer {
             wasFrozen = frozen;
         });
         HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,
-                Identifier.fromNamespaceAndPath("piston_depth", "hud"), PistonDepthClient::renderHud);
+                Identifier.fromNamespaceAndPath("tickweave", "hud"), TickWeaveClient::renderHud);
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
-                dispatcher.register(literal("pdepth")
+                dispatcher.register(literal("tickweave")
                         .executes(ctx -> feedback(ctx.getSource(), "usage"))
                         .then(literal("on").executes(ctx -> {
                             setEnabled(true);
@@ -114,7 +114,7 @@ public final class PistonDepthClient implements ClientModInitializer {
 
     private static int feedback(net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource source,
                                 String key, Object... args) {
-        source.sendFeedback(Component.translatable("command.piston_depth." + key, args));
+        source.sendFeedback(Component.translatable("command.tickweave." + key, args));
         return 1;
     }
 
@@ -148,7 +148,7 @@ public final class PistonDepthClient implements ClientModInitializer {
                         && event.extendedBefore() == event.extendedAfter()) noMove++;
                 if (analysis.outputExtensions.containsKey(event.sequence())) outputs++;
                 lines.add(new InspectionLine(tick.getKey(), event.sequence(), Component.translatable(
-                        "command.piston_depth.inspect_piston", tick.getKey(), event.sequence(),
+                        "command.tickweave.inspect_piston", tick.getKey(), event.sequence(),
                         event.pos().getX(), event.pos().getY(), event.pos().getZ(), event.order(),
                         displayDepth(event.depth()), event.chain(), actionName(event),
                         event.succeeded() ? tr("inspect_success") : tr("inspect_cancelled"),
@@ -161,7 +161,7 @@ public final class PistonDepthClient implements ClientModInitializer {
                         || !inside(wire.pos(), minX, maxX, minY, maxY, minZ, maxZ)) continue;
                 wireChanges++;
                 lines.add(new InspectionLine(tick.getKey(), wire.sequence(), Component.translatable(
-                        "command.piston_depth.inspect_wire", tick.getKey(), wire.sequence(),
+                        "command.tickweave.inspect_wire", tick.getKey(), wire.sequence(),
                         wire.pos().getX(), wire.pos().getY(), wire.pos().getZ(),
                         wire.oldPower(), wire.newPower(), wire.source() == null
                                 ? tr("unattributed_wire") : "D" + displayDepth(wire.depth()),
@@ -169,7 +169,7 @@ public final class PistonDepthClient implements ClientModInitializer {
                                 : tr("source_event", formatPos(wire.source()), wire.sourceSequence()))));
             }
         }
-        source.sendFeedback(Component.translatable("command.piston_depth.inspect_summary",
+        source.sendFeedback(Component.translatable("command.tickweave.inspect_summary",
                 HISTORY.size(), extend, noMove, failedExtend, retract, wireChanges, outputs));
         if (lines.isEmpty()) return feedback(source, "inspect_none");
         lines.sort(Comparator.comparingLong(InspectionLine::tick).thenComparingInt(InspectionLine::sequence));
@@ -472,7 +472,7 @@ public final class PistonDepthClient implements ClientModInitializer {
 
     private static String tr(String key, Object... args) {
         // I18n 使用客户端当前语言。模组只提供英文和中文，其余语言回退到 en_us。
-        return I18n.get("text.piston_depth." + key, args);
+        return I18n.get("text.tickweave." + key, args);
     }
 
     private static final class TickTrace {

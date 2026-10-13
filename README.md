@@ -1,10 +1,8 @@
 # 刻络 · TickWeave
 
-<img src="src/main/resources/assets/piston_depth/icon.png" alt="TickWeave 图标" width="128" align="right">
+<img src="src/main/resources/assets/tickweave/icon.png" alt="TickWeave 图标" width="128" align="right">
 
 TickWeave 是一个用于观察 Minecraft 红石**微时序**的 Fabric 模组。在游戏刻冻结后逐刻运行电路，它会记录服务端的活塞方块事件和红石粉求值，并在客户端显示执行顺序、事件深度与传播关系，方便分析 BED 编解码器等对更新顺序敏感的装置。
-
-“刻络”指一个游戏刻内交织的事件链。模组 ID 仍为 `piston_depth`，客户端指令仍为 `/pdepth`，原有配置文件可继续使用。
 
 ## 功能
 
@@ -18,12 +16,6 @@ TickWeave 是一个用于观察 Minecraft 红石**微时序**的 Fabric 模组�
 
 画面中的 `Dn` 是**方块事件因果深度**，不代表红石粉跨游戏刻保存了这个数字，也不包含原版引擎中所有邻居通知。
 
-## 支持版本与依赖
-
-当前提供 **Minecraft Java Edition 26.1.2** 的构建，后续会逐步增加其他游戏版本。下载时请按发行文件标注的 Minecraft 版本选择对应 JAR，不要把不同游戏版本的文件混用。
-
-当前构建需要 Java 25、Fabric Loader 0.19.5+ 和 Fabric API 0.155.3+26.1.2。客户端设置页面使用 [MaLiLib 0.28.12](https://modrinth.com/mod/malilib/version/FItuNokS)；[Mod Menu 18.0.2](https://modrinth.com/mod/modmenu/version/18.0.2) 提供模组列表里的设置入口。
-
 ## 安装
 
 1. 从 GitHub Actions 或 Release 下载与你的 Minecraft 版本对应的 `tickweave-*.jar`。`-sources.jar` 是源码包，不能作为游戏模组安装。
@@ -31,42 +23,40 @@ TickWeave 是一个用于观察 Minecraft 红石**微时序**的 Fabric 模组�
 3. **多人游戏**：客户端按上述方式安装；服务器安装相同版本的 TickWeave 与 Fabric API。MaLiLib 和 Mod Menu 只需要安装在客户端。
 4. 启动游戏，确认模组列表中出现 **TickWeave**。
 
-升级时请移除旧版 `piston_depth-*.jar` 或 `tickweave-*.jar`，不要同时保留多个版本。没有安装 MaLiLib 时仍可使用显示和查询指令，但无法打开设置页面。多人服务器若未安装本模组，就无法向客户端提供真实的事件轨迹。
-
 ## 使用方法
 
 先在有 `/tick` 指令权限的世界中开启显示并冻结游戏刻：
 
 ```text
-/pdepth on
+/tickweave on
 /tick freeze
 ```
 
-触发电路输入（例如右键输入音符盒），然后逐刻执行：
+触发红石信号激活，然后逐刻执行：
 
 ```text
 /tick step 1
 ```
 
-观察活塞上方的编号与深度标签，以及红石线上的电平标签。若信号经过侦测器或其他延迟元件，可能需要继续执行几次 `/tick step 1`。单人世界需要启用作弊或拥有相应权限才能使用 `/tick`。
+观察活塞上方的编号与深度标签，以及红石线上的标签。若信号经过侦测器或其他延迟元件，可能需要继续执行几次 `/tick step 1`。
 
 ### 客户端指令
 
-- `/pdepth on`、`/pdepth off`：开启或关闭可视化。
-- `/pdepth prev`、`/pdepth next`：切换到更早或更新的有记录游戏刻。
-- `/pdepth clear`：清空本次客户端记录。
-- `/pdepth config`：打开 MaLiLib 设置页面。
-- `/pdepth inspect <x1> <y1> <z1> <x2> <y2> <z2>`：查询两个角点围成的长方体范围。
+- `/tickweave on`、`/tickweave off`：开启或关闭可视化。
+- `/tickweave prev`、`/tickweave next`：切换到更早或更新的有记录游戏刻。
+- `/tickweave clear`：清空本次客户端记录。
+- `/tickweave config`：打开 MaLiLib 设置页面。
+- `/tickweave inspect <x1> <y1> <z1> <x2> <y2> <z2>`：查询两个角点围成的长方体范围。
 
 例如：
 
 ```text
-/pdepth clear
+/tickweave clear
 /tick step 1
-/pdepth inspect 0 64 0 10 70 10
+/tickweave inspect 0 64 0 10 70 10
 ```
 
-`inspect` 会汇总范围内实际伸出、收回、取消、红石电平变化和 0t 红石块输出，并按游戏刻和同刻序号显示最后 48 条明细。一次执行 `/tick step 14` 后，界面会显示最后一个有记录的游戏刻；中间短暂伸出又收回的动作，请用 `prev` 浏览或通过 `inspect` 查询。坐标范围过大时可以缩小查询范围，汇总仍会统计全部匹配记录。
+`inspect` 会汇总范围内实际伸出、收回、取消、红石电平变化和 0t 红石块输出，并按游戏刻和同刻序号显示最后 48 条明细。中间短暂伸出又收回的动作，请用 `prev` 浏览或通过 `inspect` 查询。坐标范围过大时可以缩小查询范围，汇总仍会统计全部匹配记录。
 
 仅在 tick 冻结时采集并绘制轨迹。客户端接收同维度、距玩家 96 格内的记录；世界标签还受配置中的绘制距离限制。
 
@@ -74,8 +64,8 @@ TickWeave 是一个用于观察 Minecraft 红石**微时序**的 Fabric 模组�
 
 - 活塞大字 `#3`：该活塞事件是当前游戏刻第 3 个**执行**的活塞事件。
 - `D2 · 引发 D3`：当前事件属于第二层，执行过程中产生了下一层子事件。不是一个活塞同时拥有两个深度，也不是数值相加。根事件显示为 `D1`。
-- 红石粉上的 `D2,3 P15`：这一位置在当前刻关联到第二、第三层事件，最后观测电平为 15。`R` 表示没有可归属的父方块事件，不自动代表基准线或重置线。
-- `E0→E1`、`E1→E0`：活塞 `extended` 状态分别变成伸出、收回。`E0→E0` 表示该事件没有造成实际伸出。
+- 红石粉上的 `D2,3 P15`：这一位置在当前刻关联到第二、第三层事件，最后观测信号为 15。`R` 表示没有可归属的父方块事件，不自动代表基准线或重置线。
+- `E0→E1`、`E1→E0`：活塞 `extended` 状态分别变成伸出、拉回。`E0→E0` 表示该事件没有造成实际伸出。
 - “入队电1→执行电0”：事件排队时有电，但轮到执行时失电；这可以解释部分伸出事件为什么被取消。
 - `R10→01`：活塞前方第一、第二格的红石块占位从 `10` 变为 `01`；移动中的红石块也按占位计算。
 
@@ -83,7 +73,7 @@ TickWeave 是一个用于观察 Minecraft 红石**微时序**的 Fabric 模组�
 
 ## 配置与语言
 
-输入 `/pdepth config`，或通过 Mod Menu 的配置按钮打开 MaLiLib 页面。客户端设置保存在 `config/piston_depth.json`，修改大小与颜色后可立即预览。
+输入 `/tickweave config`，或通过 Mod Menu 的配置按钮打开 MaLiLib 页面。客户端设置保存在 `config/tickweave.json`，修改大小与颜色后可立即预览。
 
 - **显示**：总开关、活塞事件和红石线分别控制。
 - **文字**：世界标签总倍率，以及活塞序号、事件详情和红石线的独立大小。
@@ -104,7 +94,7 @@ TickWeave 是一个用于观察 Minecraft 红石**微时序**的 Fabric 模组�
 
 Windows 使用 `gradlew.bat build`。可安装的 JAR 位于 `build/libs/`。首次构建需联网下载 Gradle、Minecraft、Fabric 与可选界面库的编译依赖。在 IntelliJ IDEA 中应以**项目根目录的 `build.gradle`** 导入 Gradle 项目，并将 Gradle JVM 设置为 JDK 25。
 
-服务端的方块事件采集位于 [`ServerLevelMixin`](src/main/java/top/xinsin/pistondepth/mixin/ServerLevelMixin.java)，红石粉求值上下文位于 [`WireContext`](src/main/java/top/xinsin/pistondepth/server/WireContext.java)，网络分片由 [`TraceBroadcaster`](src/main/java/top/xinsin/pistondepth/server/TraceBroadcaster.java) 发送，客户端展示位于 [`PistonDepthClient`](src/main/java/top/xinsin/pistondepth/client/PistonDepthClient.java)。配置由 [`ClientSettings`](src/main/java/top/xinsin/pistondepth/client/ClientSettings.java) 保存，MaLiLib 页面由 [`MasaConfigBridge`](src/main/java/top/xinsin/pistondepth/client/MasaConfigBridge.java) 提供。
+服务端的方块事件采集位于 [`ServerLevelMixin`](src/main/java/top/xinsin/tickweave/mixin/ServerLevelMixin.java)，红石粉求值上下文位于 [`WireContext`](src/main/java/top/xinsin/tickweave/server/WireContext.java)，网络分片由 [`TraceBroadcaster`](src/main/java/top/xinsin/tickweave/server/TraceBroadcaster.java) 发送，客户端展示位于 [`TickWeaveClient`](src/main/java/top/xinsin/tickweave/client/TickWeaveClient.java)。配置由 [`ClientSettings`](src/main/java/top/xinsin/tickweave/client/ClientSettings.java) 保存，MaLiLib 页面由 [`MasaConfigBridge`](src/main/java/top/xinsin/tickweave/client/MasaConfigBridge.java) 提供。
 
 [GitHub Actions](.github/workflows/build.yml) 会在推送到 `main`、提交 Pull Request 和手动触发时检查提交标题并构建 JAR。CI 通过表示提交格式与编译检查通过；游戏内效果仍需实际装置验证。
 

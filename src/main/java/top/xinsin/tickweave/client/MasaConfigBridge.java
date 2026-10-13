@@ -1,4 +1,4 @@
-package top.xinsin.pistondepth.client;
+package top.xinsin.tickweave.client;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -24,12 +24,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 
 /**
- * 可选的 MaLiLib 适配层。PistonDepthClient 先检查 isModLoaded("malilib") 才调用它，
+ * 可选的 MaLiLib 适配层。TickWeaveClient 先检查 isModLoaded("malilib") 才调用它，
  * 因而没有安装 MaLiLib 的客户端仍能使用指令，专用服务器也不会链接到这些类。
  * MaLiLib 管理控件和按键检测；ClientSettings 负责数据和持久化。
  */
 public final class MasaConfigBridge implements IConfigHandler, IKeybindProvider {
-    private static final String MOD_ID = "piston_depth";
+    private static final String MOD_ID = "tickweave";
     private static final MasaConfigBridge INSTANCE = new MasaConfigBridge();
 
     private final ConfigBoolean enabled = label(new ConfigBoolean("enabled", false), "enabled");
@@ -79,9 +79,9 @@ public final class MasaConfigBridge implements IConfigHandler, IKeybindProvider 
             else if (option instanceof ConfigInteger c) c.setValueChangeCallback(ignored -> INSTANCE.apply());
             else if (option instanceof ConfigColor c) c.setValueChangeCallback(ignored -> INSTANCE.apply());
         }
-        INSTANCE.toggleKey.getKeybind().setCallback((action, key) -> { PistonDepthClient.toggleEnabled(); return true; });
-        INSTANCE.previousKey.getKeybind().setCallback((action, key) -> { PistonDepthClient.previousTick(); return true; });
-        INSTANCE.nextKey.getKeybind().setCallback((action, key) -> { PistonDepthClient.nextTick(); return true; });
+        INSTANCE.toggleKey.getKeybind().setCallback((action, key) -> { TickWeaveClient.toggleEnabled(); return true; });
+        INSTANCE.previousKey.getKeybind().setCallback((action, key) -> { TickWeaveClient.previousTick(); return true; });
+        INSTANCE.nextKey.getKeybind().setCallback((action, key) -> { TickWeaveClient.nextTick(); return true; });
         INSTANCE.configKey.getKeybind().setCallback((action, key) -> { open(Minecraft.getInstance().screen); return true; });
         ConfigManager.getInstance().registerConfigHandler(MOD_ID, INSTANCE);
         InputEventHandler.getKeybindManager().registerKeybindProvider(INSTANCE);
@@ -96,7 +96,7 @@ public final class MasaConfigBridge implements IConfigHandler, IKeybindProvider 
     public static GuiModConfigs createScreen(Screen parent) {
         INSTANCE.syncEnabledOption();
         return (GuiModConfigs) new GuiModConfigs(MOD_ID, INSTANCE.options,
-                I18n.get("config.piston_depth.title")).setParent(parent);
+                I18n.get("config.tickweave.title")).setParent(parent);
     }
 
     /** 指令会改变同一开关；同步控件，避免下次打开页面显示旧状态。 */
@@ -198,9 +198,9 @@ public final class MasaConfigBridge implements IConfigHandler, IKeybindProvider 
 
     private static <T extends IConfigBase> T label(T option, String name) {
         // MaLiLib 翻译这些 key；Minecraft 自行按当前游戏语言选中/英文。
-        option.setPrettyName("config.piston_depth.prettyName." + name);
-        option.setTranslatedName("config.piston_depth.name." + name);
-        option.setComment("config.piston_depth.comment." + name);
+        option.setPrettyName("config.tickweave.prettyName." + name);
+        option.setTranslatedName("config.tickweave.name." + name);
+        option.setComment("config.tickweave.comment." + name);
         return option;
     }
 

@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "top.xinsin.pistondepth.mixin",
+  "package": "top.xinsin.tickweave.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": ["ServerLevelMixin", "PistonPowerAccessor", "DefaultWireEvaluatorMixin", "ExperimentalWireEvaluatorMixin", "RedStoneWireBlockMixin"],
   "client": ["DebugRendererMixin"],

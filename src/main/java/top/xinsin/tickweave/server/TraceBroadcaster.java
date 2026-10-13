@@ -1,4 +1,4 @@
-package top.xinsin.pistondepth.server;
+package top.xinsin.tickweave.server;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,14 +7,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.xinsin.pistondepth.net.TraceEntry;
-import top.xinsin.pistondepth.net.TracePacket;
-import top.xinsin.pistondepth.net.WireTrace;
+import top.xinsin.tickweave.net.TraceEntry;
+import top.xinsin.tickweave.net.TracePacket;
+import top.xinsin.tickweave.net.WireTrace;
 
 /** 把服务端的一刻记录按玩家距离筛选、分片，再发送给装有同版本模组的客户端。 */
 public final class TraceBroadcaster {
     private static final double RADIUS_SQUARED = 96.0 * 96.0;
-    private static final Logger LOGGER = LoggerFactory.getLogger("PistonDepth");
+    private static final Logger LOGGER = LoggerFactory.getLogger("TickWeave");
 
     private TraceBroadcaster() { }
 
@@ -23,7 +23,7 @@ public final class TraceBroadcaster {
         // 空刻不发包，否则客户端“最新记录”会不断被空白刻覆盖。
         if (!level.tickRateManager().isFrozen() || (processed.isEmpty() && wires.isEmpty())) return;
         // 调试日志保留内部零起始深度，便于逐事件核对；普通游玩默认关闭。
-        if (Boolean.getBoolean("piston_depth.debug")) {
+        if (Boolean.getBoolean("tickweave.debug")) {
             LOGGER.info("tick {}: {} block events, {} wire observations", tick,
                     processed.size(), wires.size());
             for (TraceEntry entry : processed) {

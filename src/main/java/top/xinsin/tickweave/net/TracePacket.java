@@ -1,4 +1,4 @@
-package top.xinsin.pistondepth.net;
+package top.xinsin.tickweave.net;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import net.minecraft.resources.Identifier;
  * 不传已翻译的文字：不同客户端可以按各自的游戏语言显示同一份服务器数据。
  */
 public record TracePacket(long tick, List<TraceEntry> entries, List<WireTrace> wires) implements CustomPacketPayload {
-    public static final Type<TracePacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath("piston_depth", "trace_v8"));
+    public static final Type<TracePacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath("tickweave", "trace_v8"));
     public static final StreamCodec<RegistryFriendlyByteBuf, TracePacket> CODEC = StreamCodec.of(TracePacket::write, TracePacket::read);
     public static final int MAX_ENTRIES = 256;
     public static final int MAX_WIRES = 256;

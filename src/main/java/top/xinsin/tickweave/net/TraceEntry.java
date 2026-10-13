@@ -1,4 +1,4 @@
-package top.xinsin.pistondepth.net;
+package top.xinsin.tickweave.net;
 
 import net.minecraft.core.BlockPos;
 

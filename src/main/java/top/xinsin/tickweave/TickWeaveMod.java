@@ -1,11 +1,11 @@
-package top.xinsin.pistondepth;
+package top.xinsin.tickweave;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import top.xinsin.pistondepth.net.TracePacket;
+import top.xinsin.tickweave.net.TracePacket;
 
-public final class PistonDepthMod implements ModInitializer {
-    public static final String MOD_ID = "piston_depth";
+public final class TickWeaveMod implements ModInitializer {
+    public static final String MOD_ID = "tickweave";
 
     @Override
     public void onInitialize() {

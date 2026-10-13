@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "package": "top.xinsin.pistondepth.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": ["ServerLevelMixin", "PistonPowerAccessor", "DefaultWireEvaluatorMixin", "ExperimentalWireEvaluatorMixin", "RedStoneWireBlockMixin"],
+  "client": ["DebugRendererMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

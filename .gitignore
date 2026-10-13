@@ -1,0 +1,14 @@
+.gradle/
+build/
+run/
+.idea/
+*.iml
+.vscode/
+.fleet/
+out/
+*.class
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "piston_depth",
+  "version": "${version}",
+  "name": "TickWeave",
+  "description": "Visualize redstone microtiming, piston event depth, and wire updates.",
+  "icon": "assets/piston_depth/icon.png",
+  "authors": ["xinsin"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["top.xinsin.pistondepth.PistonDepthMod"],
+    "client": ["top.xinsin.pistondepth.client.PistonDepthClient"],
+    "modmenu": ["top.xinsin.pistondepth.client.PistonDepthModMenu"]
+  },
+  "mixins": ["piston_depth.mixins.json"],
+  "suggests": {
+    "malilib": "*",
+    "modmenu": "*"
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "26.1.2",
+    "java": ">=25"
+  }
+}

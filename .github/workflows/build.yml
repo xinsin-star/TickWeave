@@ -1,4 +1,4 @@
-name: Build
+name: Build and release
 
 on:
   push:
@@ -45,3 +45,81 @@ jobs:
             !build/libs/*-sources.jar
           if-no-files-found: error
           retention-days: 14
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      group: tickweave-release
+      cancel-in-progress: false
+
+    steps:
+      - name: Check out source and tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version and release notes
+        id: metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(sed -n 's/^mod_version=//p' gradle.properties)
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::mod_version must be a semantic version (for example, 1.0.0)."
+            exit 1
+          fi
+          notes="release-notes/${version}.md"
+          if [[ ! -s "$notes" ]] || [[ "$(head -n 1 "$notes")" != "# TickWeave ${version}" ]]; then
+            echo "::error::Add $notes with '# TickWeave ${version}' as its first line."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "notes=$notes" >> "$GITHUB_OUTPUT"
+
+      - name: Download installable mod
+        uses: actions/download-artifact@v4
+        with:
+          name: tickweave-${{ github.run_number }}
+          path: release-artifacts
+
+      - name: Create release and version tag
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ steps.metadata.outputs.version }}
+          NOTES: ${{ steps.metadata.outputs.notes }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          jars=(release-artifacts/*.jar)
+          if (( ${#jars[@]} != 1 )); then
+            echo "::error::Expected exactly one installable JAR, found ${#jars[@]}."
+            exit 1
+          fi
+
+          # 同一个版本只发布一次。后续 main 提交仍构建，但需要升级版本才产生新 Release。
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists; skipping publication."
+            exit 0
+          fi
+
+          # 已有标签必须指向本次构建的提交，避免把新 JAR 关联到旧源码。
+          if git rev-parse -q --verify "refs/tags/${VERSION}^{commit}" >/dev/null; then
+            tag_commit=$(git rev-list -n 1 "$VERSION")
+            if [[ "$tag_commit" != "$GITHUB_SHA" ]]; then
+              echo "::error::Tag $VERSION points to $tag_commit, not $GITHUB_SHA. Bump mod_version."
+              exit 1
+            fi
+          fi
+
+          gh release create "$VERSION" "${jars[0]}" \
+            --title "TickWeave $VERSION" \
+            --notes-file "$NOTES" \
+            --target "$GITHUB_SHA"

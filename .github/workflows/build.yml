@@ -1,9 +1,6 @@
 name: Build and release
 
 on:
-  push:
-    branches: [main, 'LTS/**']
-  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -49,7 +46,7 @@ jobs:
   release:
     name: Publish GitHub Release
     needs: build
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -104,7 +101,7 @@ jobs:
             exit 1
           fi
 
-          # 同一个版本只发布一次。后续 main 提交仍构建，但需要升级版本才产生新 Release。
+          # 同一个版本只发布一次。后续手动运行仍构建，但需要升级版本才产生新 Release。
           if gh release view "$VERSION" >/dev/null 2>&1; then
             echo "Release $VERSION already exists; skipping publication."
             exit 0

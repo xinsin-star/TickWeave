@@ -23,13 +23,6 @@ TickWeave 是一个用于观察 Minecraft 红石**微时序**的 Fabric 模组�
 3. **多人游戏**：客户端按上述方式安装；服务器安装相同版本的 TickWeave 与 Fabric API。MaLiLib 和 Mod Menu 只需要安装在客户端。
 4. 启动游戏，确认模组列表中出现 **TickWeave**。
 
-### 版本兼容与升级
-
-- **Minecraft 26.2**：使用 TickWeave `0.6.1` 和适配 26.2 的 Fabric API。客户端安装 MaLiLib `0.29.6` 以使用设置页面；Mod Menu `20.0.3` 可选。
-- **Minecraft 26.1.2**：继续使用 TickWeave `0.6.0` 及对应的依赖。26.2 的 JAR 不能用于 26.1.2。
-
-将存档从 26.1.2 升级到 26.2 时，请在客户端和服务器上替换旧 TickWeave JAR 及随 Minecraft 版本变化的依赖。多人游戏两端应使用相同的 TickWeave 版本。已有的 `config/tickweave.json` 可以保留，首次启动后检查显示设置。26.2 分支在 GitHub Actions 中生成构建产物；Release 工作流仅从 `main` 发布。
-
 ## 使用方法
 
 先在有 `/tick` 指令权限的世界中开启显示并冻结游戏刻：
@@ -103,15 +96,15 @@ Windows 使用 `gradlew.bat build`。可安装的 JAR 位于 `build/libs/`。首
 
 服务端的方块事件采集位于 [`ServerLevelMixin`](src/main/java/top/xinsin/tickweave/mixin/ServerLevelMixin.java)，红石粉求值上下文位于 [`WireContext`](src/main/java/top/xinsin/tickweave/server/WireContext.java)，网络分片由 [`TraceBroadcaster`](src/main/java/top/xinsin/tickweave/server/TraceBroadcaster.java) 发送，客户端展示位于 [`TickWeaveClient`](src/main/java/top/xinsin/tickweave/client/TickWeaveClient.java)。配置由 [`ClientSettings`](src/main/java/top/xinsin/tickweave/client/ClientSettings.java) 保存，MaLiLib 页面由 [`MasaConfigBridge`](src/main/java/top/xinsin/tickweave/client/MasaConfigBridge.java) 提供。
 
-[GitHub Actions](.github/workflows/build.yml) 会在推送到 `main` 或 `LTS/*`、提交 Pull Request 和手动触发时检查提交标题并构建 JAR。只有 `main` 的成功构建会发布 Release。CI 通过表示提交格式与编译检查通过；游戏内效果仍需实际装置验证。
+[GitHub Actions](.github/workflows/build.yml) 只会通过 **Run workflow** 手动启动。选择要构建的分支后，工作流检查该分支最新提交的标题并构建 JAR。在 `main` 上成功运行时，还会为新版本发布 Release。运行通过表示最新提交格式与编译检查通过；游戏内效果仍需实际装置验证。
 
 ## 发布流程
 
 1. 在 `gradle.properties` 中更新 `mod_version`，例如 `1.0.0`。
 2. 新建对应的 `release-notes/1.0.0.md`，首行写 `# TickWeave 1.0.0`，其余内容填写该版本的发布与修改说明。
-3. 将代码和说明推送到 `main`，或从 `main` 手动运行 [GitHub Actions](.github/workflows/build.yml)。构建成功后，CI 会把可安装 JAR 发布到 GitHub Release，并用版本号本身作为标签（例如 `1.0.0`）。
+3. 将代码和说明推送到 `main`，然后选择 `main` 手动运行 [GitHub Actions](.github/workflows/build.yml)。构建成功后，CI 会把可安装 JAR 发布到 GitHub Release，并用版本号本身作为标签（例如 `1.0.0`）。
 
-同一版本只发布一次；后续提交仍会构建，但不会覆盖已经发布的 Release。发布下一版时需再次更新版本号并新增对应说明文件。当前 26.2 构建的说明见 [0.6.1 发布说明](release-notes/0.6.1.md)。
+同一版本只发布一次；后续手动运行仍会构建，但不会覆盖已经发布的 Release。发布下一版时需再次更新版本号并新增对应说明文件。当前 26.2 构建的说明见 [0.6.1 发布说明](release-notes/0.6.1.md)。
 
 ## 贡献与提交格式
 
@@ -135,7 +128,7 @@ Windows 使用 `gradlew.bat build`。可安装的 JAR 位于 `build/libs/`。首
 📝 Docs: 更新安装与使用说明
 ```
 
-`feat: ...`、`Fix: ...`、`➕ feat: ...` 等格式都不符合要求。CI 会检查推送或 Pull Request 中的**每一条提交标题**。合并 Pull Request 时请让最终提交标题也符合该规则；自动生成的普通 merge commit 标题可能无法通过检查。
+`feat: ...`、`Fix: ...`、`➕ feat: ...` 等格式都不符合要求。手动运行 CI 时会检查所选分支的**最新一条提交标题**。合并 Pull Request 时请让最终提交标题也符合该规则；自动生成的普通 merge commit 标题可能无法通过检查。
 
 ## 许可协议
 

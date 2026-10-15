@@ -25,8 +25,8 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     // Both libraries are client-only and optional for the common/server entrypoint.
-    compileOnly "maven.modrinth:GcWjdA9I:KvjmGjAV" // MaLiLib 0.29.6, MC 26.2
-    compileOnly "maven.modrinth:mOgUt4GM:iRo7AZXf" // Mod Menu 20.0.3, MC 26.2
+    compileOnly "maven.modrinth:GcWjdA9I:FItuNokS" // MaLiLib 0.28.12, MC 26.1.2
+    compileOnly "maven.modrinth:mOgUt4GM:ZJ6YTrMY" // Mod Menu 18.0.2, MC 26.1.x
 }
 
 processResources {

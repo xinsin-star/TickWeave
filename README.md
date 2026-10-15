@@ -96,15 +96,15 @@ Windows 使用 `gradlew.bat build`。可安装的 JAR 位于 `build/libs/`。首
 
 服务端的方块事件采集位于 [`ServerLevelMixin`](src/main/java/top/xinsin/tickweave/mixin/ServerLevelMixin.java)，红石粉求值上下文位于 [`WireContext`](src/main/java/top/xinsin/tickweave/server/WireContext.java)，网络分片由 [`TraceBroadcaster`](src/main/java/top/xinsin/tickweave/server/TraceBroadcaster.java) 发送，客户端展示位于 [`TickWeaveClient`](src/main/java/top/xinsin/tickweave/client/TickWeaveClient.java)。配置由 [`ClientSettings`](src/main/java/top/xinsin/tickweave/client/ClientSettings.java) 保存，MaLiLib 页面由 [`MasaConfigBridge`](src/main/java/top/xinsin/tickweave/client/MasaConfigBridge.java) 提供。
 
-[GitHub Actions](.github/workflows/build.yml) 会在推送到 `main`、提交 Pull Request 和手动触发时检查提交标题并构建 JAR。Pull Request 只构建，不发布。CI 通过表示提交格式与编译检查通过；游戏内效果仍需实际装置验证。
+[GitHub Actions](.github/workflows/build.yml) 只会通过 **Run workflow** 手动启动。选择要构建的分支后，工作流检查该分支最新提交的标题并构建 JAR；在 `main` 上成功运行时，还会为新版本发布 Release。运行通过表示最新提交格式与编译检查通过；游戏内效果仍需实际装置验证。
 
 ## 发布流程
 
 1. 在 `gradle.properties` 中更新 `mod_version`，例如 `1.0.0`。
 2. 新建对应的 `release-notes/1.0.0.md`，首行写 `# TickWeave 1.0.0`，其余内容填写该版本的发布与修改说明。
-3. 将代码和说明推送到 `main`，或从 `main` 手动运行 [GitHub Actions](.github/workflows/build.yml)。构建成功后，CI 会把可安装 JAR 发布到 GitHub Release，并用版本号本身作为标签（例如 `1.0.0`）。
+3. 将代码和说明推送到 `main`，然后选择 `main` 手动运行 [GitHub Actions](.github/workflows/build.yml)。构建成功后，CI 会把可安装 JAR 发布到 GitHub Release，并用版本号本身作为标签（例如 `1.0.0`）。
 
-同一版本只发布一次；后续提交仍会构建，但不会覆盖已经发布的 Release。发布下一版时需再次更新版本号并新增对应说明文件。当前版本的说明见 [0.6.0 发布说明](release-notes/0.6.0.md)。
+同一版本只发布一次；后续手动运行仍会构建，但不会覆盖已经发布的 Release。发布下一版时需再次更新版本号并新增对应说明文件。当前版本的说明见 [0.6.0 发布说明](release-notes/0.6.0.md)。
 
 ## 贡献与提交格式
 
@@ -128,7 +128,7 @@ Windows 使用 `gradlew.bat build`。可安装的 JAR 位于 `build/libs/`。首
 📝 Docs: 更新安装与使用说明
 ```
 
-`feat: ...`、`Fix: ...`、`➕ feat: ...` 等格式都不符合要求。CI 会检查推送或 Pull Request 中的**每一条提交标题**。合并 Pull Request 时请让最终提交标题也符合该规则；自动生成的普通 merge commit 标题可能无法通过检查。
+`feat: ...`、`Fix: ...`、`➕ feat: ...` 等格式都不符合要求。手动运行 CI 时会检查所选分支的**最新一条提交标题**。合并 Pull Request 时请让最终提交标题也符合该规则；自动生成的普通 merge commit 标题可能无法通过检查。
 
 ## 许可协议
 

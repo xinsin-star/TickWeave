@@ -130,6 +130,7 @@ Valid examples:
 📝 Docs: Update installation instructions
 ```
 
+
 Subjects such as `feat: ...`, `Fix: ...`, or `➕ feat: ...` fail the check. A manual CI run checks the **latest commit subject** on the selected branch. When merging a pull request, use a compliant final commit subject too; a default merge-commit subject may fail the check.
 
 ## License

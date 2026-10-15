@@ -23,6 +23,13 @@ TickWeave is a Fabric mod for observing Minecraft redstone **microtiming**. Free
 3. **Multiplayer:** Install the same TickWeave version and Fabric API on the server as well as the client. MaLiLib and Mod Menu are only needed on the client.
 4. Start the game and confirm that **TickWeave** appears in the mod list.
 
+### Version compatibility and upgrading
+
+- **Minecraft 26.2:** Use TickWeave `0.6.1` with Fabric API for 26.2. Install MaLiLib `0.29.6` on the client for the settings screen; Mod Menu `20.0.3` is optional.
+- **Minecraft 26.1.2:** Keep TickWeave `0.6.0` and dependencies for 26.1.2. The 26.2 JAR cannot be used with 26.1.2.
+
+When upgrading a world from 26.1.2 to 26.2, replace the old TickWeave JAR and version-specific dependencies on the client and server. Use the same TickWeave version on both sides in multiplayer. Your existing `config/tickweave.json` can remain in place; check your display settings after the first launch. The 26.2 branch builds an artifact in GitHub Actions; the Release workflow publishes only from `main`.
+
 ## Usage
 
 In a world where you can use `/tick`, enable the overlay and freeze game ticks:
@@ -96,7 +103,7 @@ On Windows, use `gradlew.bat build`. The installable JAR is written to `build/li
 
 Server-side block event collection is in [`ServerLevelMixin`](src/main/java/top/xinsin/tickweave/mixin/ServerLevelMixin.java). Redstone dust evaluation context is in [`WireContext`](src/main/java/top/xinsin/tickweave/server/WireContext.java). [`TraceBroadcaster`](src/main/java/top/xinsin/tickweave/server/TraceBroadcaster.java) sends network fragments, and [`TickWeaveClient`](src/main/java/top/xinsin/tickweave/client/TickWeaveClient.java) renders them. [`ClientSettings`](src/main/java/top/xinsin/tickweave/client/ClientSettings.java) stores settings, and [`MasaConfigBridge`](src/main/java/top/xinsin/tickweave/client/MasaConfigBridge.java) provides the MaLiLib screen.
 
-[GitHub Actions](.github/workflows/build.yml) checks commit subjects and builds the JAR on pushes to `main`, pull requests, and manual runs. Pull requests build without publishing. A passing CI run confirms the commit format and build; visual behavior still needs in-game verification.
+[GitHub Actions](.github/workflows/build.yml) checks commit subjects and builds the JAR on pushes to `main` or `LTS/*`, pull requests, and manual runs. Only successful builds from `main` publish a Release. A passing CI run confirms the commit format and build; visual behavior still needs in-game verification.
 
 ## Release process
 
@@ -104,7 +111,7 @@ Server-side block event collection is in [`ServerLevelMixin`](src/main/java/top/
 2. Add `release-notes/1.0.0.md`. Its first line must be `# TickWeave 1.0.0`; describe what the version adds and changes below it.
 3. Push the code and notes to `main`, or manually run [GitHub Actions](.github/workflows/build.yml) from `main`. After a successful build, CI publishes the installable JAR to GitHub Releases with the version number itself as the tag, such as `1.0.0`.
 
-Each version is published once. Later commits still build but do not overwrite an existing Release. To publish another version, update the version number and add its notes file. See the [0.6.0 release notes](release-notes/0.6.0.md) for the current version.
+Each version is published once. Later commits still build but do not overwrite an existing Release. To publish another version, update the version number and add its notes file. See the [0.6.1 release notes](release-notes/0.6.1.md) for the current 26.2 build.
 
 ## Contributing and commit format
 

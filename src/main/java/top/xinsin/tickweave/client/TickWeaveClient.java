@@ -29,7 +29,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gizmos.Gizmos;
 import net.minecraft.gizmos.TextGizmo;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
@@ -108,7 +107,7 @@ public final class TickWeaveClient implements ClientModInitializer {
                             if (!FabricLoader.getInstance().isModLoaded("malilib")) {
                                 return feedback(ctx.getSource(), "malilib_required");
                             }
-                            MasaConfigBridge.open(Minecraft.getInstance().gui.screen());
+                            MasaConfigBridge.open(Minecraft.getInstance().screen);
                             return 1;
                         }))));
     }
@@ -458,7 +457,7 @@ public final class TickWeaveClient implements ClientModInitializer {
         boolean supportedChinese = "zh_cn".equals(language) || "zh_tw".equals(language) || "zh_hk".equals(language);
         if (!supportedChinese && !"en_us".equals(language)) return blockId;
         String key = "block." + blockId.substring(0, separator) + "." + blockId.substring(separator + 1);
-        return Language.getInstance().has(key) ? I18n.get(key) : blockId;
+        return I18n.exists(key) ? I18n.get(key) : blockId;
     }
 
     private static String actionName(TraceEntry event) {

@@ -1,54 +1,56 @@
-# 刻络 · TickWeave
+# TickWeave · 刻络
 
-<img src="src/main/resources/assets/tickweave/icon.png" alt="TickWeave 图标" width="128" align="right">
+**English** | [简体中文](README.zh-CN.md)
 
-TickWeave 是一个用于观察 Minecraft 红石**微时序**的 Fabric 模组。在游戏刻冻结后逐刻运行电路，它会记录服务端的活塞方块事件和红石粉求值，并在客户端显示执行顺序、事件深度与传播关系，方便分析 BED 编解码器等对更新顺序敏感的装置。
+<img src="src/main/resources/assets/tickweave/icon.png" alt="TickWeave icon" width="128" align="right">
 
-## 功能
+TickWeave is a Fabric mod for observing Minecraft redstone **microtiming**. Freeze game ticks, step through a circuit, and inspect server-recorded piston block events and redstone dust evaluations. The client displays execution order, event depth, and observed propagation links, making it easier to analyze BED encoders, decoders, and other order-sensitive contraptions.
 
-- **活塞执行顺序**：用 `#1`、`#2`……标出同一游戏刻内活塞事件实际执行的先后。
-- **方块事件深度**：用 `D1`、`D2`……标出方块事件的因果层级，并用箭头连接可确认的父子事件。
-- **红石线观察**：显示红石粉在当前刻被观测到的电平、关联深度和直接触发关系。
-- **活塞状态排查**：记录事件入队与执行时的供电情况，区分实际伸出、收回、状态未变和取消。
-- **0t 红石块输出**：识别同刻伸出推红石块、随后丢块收回的组合，并标出第二格的物理输出。
-- **历史查询**：浏览最近 40 个有记录的游戏刻，或用坐标范围查询逐事件明细。
-- **可配置界面**：分别控制活塞与红石线的显示，调整世界文字、HUD、颜色、距离和快捷键。
+## Features
 
-画面中的 `Dn` 是**方块事件因果深度**，不代表红石粉跨游戏刻保存了这个数字，也不包含原版引擎中所有邻居通知。
+- **Piston execution order:** Mark piston events as `#1`, `#2`, and so on in the order they actually execute within a game tick.
+- **Block event depth:** Mark causal layers as `D1`, `D2`, and so on, with arrows between parent and child events when that relationship can be confirmed.
+- **Redstone dust tracking:** Show observed dust power, associated event depths, and direct trigger relationships within the selected tick.
+- **Piston state diagnostics:** Record power both when an event is queued and when it executes, distinguishing actual extension, retraction, unchanged state, and cancellation.
+- **0t redstone block output:** Detect an extension that pushes a redstone block followed by a block-dropping retraction in the same tick, and mark the physical output in the second block space.
+- **Trace history:** Browse the latest 40 ticks with recorded events or inspect individual events within a coordinate range.
+- **Configurable display:** Control piston and dust overlays separately, and adjust world text, HUD, colors, distance, and hotkeys.
 
-## 安装
+## Installation
 
-1. 从 GitHub Actions 或 Release 下载与你的 Minecraft 版本对应的 `tickweave-*.jar`。`-sources.jar` 是源码包，不能作为游戏模组安装。
-2. **单人游戏**：将 TickWeave、Fabric API 和 MaLiLib 放入客户端 `mods` 文件夹。
-3. **多人游戏**：客户端按上述方式安装；服务器安装相同版本的 TickWeave 与 Fabric API。MaLiLib 和 Mod Menu 只需要安装在客户端。
-4. 启动游戏，确认模组列表中出现 **TickWeave**。
+1. Download the `tickweave-*.jar` for your Minecraft version from GitHub Actions or Releases. A `-sources.jar` contains source code and is not an installable mod.
+2. **Singleplayer:** Put TickWeave, Fabric API, and MaLiLib in the client's `mods` folder.
+3. **Multiplayer:** Install the same TickWeave version and Fabric API on the server as well as the client. MaLiLib and Mod Menu are only needed on the client.
+4. Start the game and confirm that **TickWeave** appears in the mod list.
 
-## 使用方法
+When upgrading a world from 26.1.2 to 26.2, replace the old TickWeave JAR and version-specific dependencies on the client and server. Use the same TickWeave version on both sides in multiplayer. Your existing `config/tickweave.json` can remain in place; check your display settings after the first launch. Run GitHub Actions manually on `LTS/26.2` to build an artifact; run it on `main` to publish a Release.
 
-先在有 `/tick` 指令权限的世界中开启显示并冻结游戏刻：
+## Usage
+
+In a world where you can use `/tick`, enable the overlay and freeze game ticks:
 
 ```text
 /tickweave on
 /tick freeze
 ```
 
-触发红石信号激活，然后逐刻执行：
+Trigger a redstone signal, then advance one game tick at a time:
 
 ```text
 /tick step 1
 ```
 
-观察活塞上方的编号与深度标签，以及红石线上的标签。若信号经过侦测器或其他延迟元件，可能需要继续执行几次 `/tick step 1`。
+Look for order and depth labels above pistons and for labels on redstone dust. If the signal passes through an observer or another delayed component, advance additional ticks.
 
-### 客户端指令
+### Client commands
 
-- `/tickweave on`、`/tickweave off`：开启或关闭可视化。
-- `/tickweave prev`、`/tickweave next`：切换到更早或更新的有记录游戏刻。
-- `/tickweave clear`：清空本次客户端记录。
-- `/tickweave config`：打开 MaLiLib 设置页面。
-- `/tickweave inspect <x1> <y1> <z1> <x2> <y2> <z2>`：查询两个角点围成的长方体范围。
+- `/tickweave on` and `/tickweave off`: Enable or disable the visualization.
+- `/tickweave prev` and `/tickweave next`: Select an earlier or later recorded tick.
+- `/tickweave clear`: Clear the client's current trace history.
+- `/tickweave config`: Open the MaLiLib settings screen.
+- `/tickweave inspect <x1> <y1> <z1> <x2> <y2> <z2>`: Inspect the cuboid defined by two opposite corners.
 
-例如：
+For example:
 
 ```text
 /tickweave clear
@@ -56,80 +58,81 @@ TickWeave 是一个用于观察 Minecraft 红石**微时序**的 Fabric 模组�
 /tickweave inspect 0 64 0 10 70 10
 ```
 
-`inspect` 会汇总范围内实际伸出、收回、取消、红石电平变化和 0t 红石块输出，并按游戏刻和同刻序号显示最后 48 条明细。中间短暂伸出又收回的动作，请用 `prev` 浏览或通过 `inspect` 查询。坐标范围过大时可以缩小查询范围，汇总仍会统计全部匹配记录。
+`inspect` summarizes actual extensions, retractions, cancellations, dust power changes, and 0t redstone block outputs. It prints the last 48 matching details with their game tick and order within that tick. Use `prev` or `inspect` to find brief extensions that happened before a later retraction. Narrow the coordinate range if the output is too large; the summary still includes all matching records.
 
-仅在 tick 冻结时采集并绘制轨迹。客户端接收同维度、距玩家 96 格内的记录；世界标签还受配置中的绘制距离限制。
+Traces are collected and rendered only while ticks are frozen. The client receives records from the same dimension within 96 blocks of the player; world labels are also limited by the configured render distance.
 
-## 如何理解标签
+## Reading the labels
 
-- 活塞大字 `#3`：该活塞事件是当前游戏刻第 3 个**执行**的活塞事件。
-- `D2 · 引发 D3`：当前事件属于第二层，执行过程中产生了下一层子事件。不是一个活塞同时拥有两个深度，也不是数值相加。根事件显示为 `D1`。
-- 红石粉上的 `D2,3 P15`：这一位置在当前刻关联到第二、第三层事件，最后观测信号为 15。`R` 表示没有可归属的父方块事件，不自动代表基准线或重置线。
-- `E0→E1`、`E1→E0`：活塞 `extended` 状态分别变成伸出、拉回。`E0→E0` 表示该事件没有造成实际伸出。
-- “入队电1→执行电0”：事件排队时有电，但轮到执行时失电；这可以解释部分伸出事件为什么被取消。
-- `R10→01`：活塞前方第一、第二格的红石块占位从 `10` 变为 `01`；移动中的红石块也按占位计算。
+- Large `#3` above a piston: This is the third piston event **executed** in the selected game tick.
+- `D2 · produced D3`: This event belongs to the second causal layer and produced a child event in the third layer. A single piston does not have two depths, and the numbers are not added together. Root events are `D1`.
+- `D2,3 P15` on redstone dust: This position was associated with second- and third-layer events during the tick; its last observed power was 15. `R` means no parent block event could be attributed. It does not automatically identify a reference or reset line.
+- `E0→E1` and `E1→E0`: The piston's `extended` state changed to extended or retracted, respectively. `E0→E0` means the event did not actually extend the piston.
+- “Queued power 1→execution power 0”: The event was powered when queued but unpowered when processed. This can explain some cancelled extension events.
+- `R10→01`: Redstone block occupancy in the first and second spaces in front of a piston changed from `10` to `01`. A moving redstone block counts as occupied.
 
-只有同一游戏刻内同时观测到伸出推红石块与后续丢块收回时，才会标记 **0t 红石块输出**。该标签描述物理输出，不表示事件深度被“消耗一层”。
+The **0t redstone block output** label appears only when both an extension pushing a redstone block and a later block-dropping retraction are observed in the same game tick. It describes a physical output; it does not mean that an event depth was “consumed.”
 
-## 配置与语言
+## Configuration and languages
 
-输入 `/tickweave config`，或通过 Mod Menu 的配置按钮打开 MaLiLib 页面。客户端设置保存在 `config/tickweave.json`，修改大小与颜色后可立即预览。
+Run `/tickweave config`, or use the Mod Menu configuration button, to open the MaLiLib settings screen. Client settings are saved in `config/tickweave.json`; size and color changes can be previewed immediately.
 
-- **显示**：总开关、活塞事件和红石线分别控制。
-- **文字**：世界标签总倍率，以及活塞序号、事件详情和红石线的独立大小。
-- **HUD**：整体倍率与屏幕 X/Y 位置。
-- **颜色**：HUD 文字与背景、触发箭头，以及 D1–D6 循环颜色。
-- **距离**：世界标签绘制距离，范围 8–96 格。
-- **快捷键**：开关显示、上一刻、下一刻、打开设置；默认不绑定。
+- **Visibility:** Master switch plus separate piston event and redstone dust switches.
+- **Text:** Overall world-label scale and separate sizes for piston order, event details, and dust labels.
+- **HUD:** Overall scale and screen X/Y position.
+- **Colors:** HUD text and background, trigger arrows, and cycling colors for D1–D6.
+- **Distance:** World-label render distance from 8 to 96 blocks.
+- **Hotkeys:** Toggle the overlay, select the previous or next tick, and open settings; all are unbound by default.
 
-界面跟随游戏语言。提供简体中文、繁体中文和英文；未提供翻译的语言回退到英文。颜色项修改的是文字或箭头的颜色，字形由 Minecraft 当前资源包提供。
+The interface follows the game's language setting. Simplified Chinese, Traditional Chinese, and English are provided; other languages fall back to English. Color settings change text or arrow colors. The font comes from the active Minecraft resource pack.
 
-## 开发与构建
+## Development and build
 
-在当前构建目标下安装 JDK 25，然后在项目根目录执行：
+Install JDK 25 for the current build target, then run this from the project root:
 
 ```sh
 ./gradlew build
 ```
 
-Windows 使用 `gradlew.bat build`。可安装的 JAR 位于 `build/libs/`。首次构建需联网下载 Gradle、Minecraft、Fabric 与可选界面库的编译依赖。在 IntelliJ IDEA 中应以**项目根目录的 `build.gradle`** 导入 Gradle 项目，并将 Gradle JVM 设置为 JDK 25。
+On Windows, use `gradlew.bat build`. The installable JAR is written to `build/libs/`. The first build needs network access to download Gradle, Minecraft, Fabric, and optional UI library dependencies. In IntelliJ IDEA, import the project's root `build.gradle` as a Gradle project and set the Gradle JVM to JDK 25.
 
-服务端的方块事件采集位于 [`ServerLevelMixin`](src/main/java/top/xinsin/tickweave/mixin/ServerLevelMixin.java)，红石粉求值上下文位于 [`WireContext`](src/main/java/top/xinsin/tickweave/server/WireContext.java)，网络分片由 [`TraceBroadcaster`](src/main/java/top/xinsin/tickweave/server/TraceBroadcaster.java) 发送，客户端展示位于 [`TickWeaveClient`](src/main/java/top/xinsin/tickweave/client/TickWeaveClient.java)。配置由 [`ClientSettings`](src/main/java/top/xinsin/tickweave/client/ClientSettings.java) 保存，MaLiLib 页面由 [`MasaConfigBridge`](src/main/java/top/xinsin/tickweave/client/MasaConfigBridge.java) 提供。
+Server-side block event collection is in [`ServerLevelMixin`](src/main/java/top/xinsin/tickweave/mixin/ServerLevelMixin.java). Redstone dust evaluation context is in [`WireContext`](src/main/java/top/xinsin/tickweave/server/WireContext.java). [`TraceBroadcaster`](src/main/java/top/xinsin/tickweave/server/TraceBroadcaster.java) sends network fragments, and [`TickWeaveClient`](src/main/java/top/xinsin/tickweave/client/TickWeaveClient.java) renders them. [`ClientSettings`](src/main/java/top/xinsin/tickweave/client/ClientSettings.java) stores settings, and [`MasaConfigBridge`](src/main/java/top/xinsin/tickweave/client/MasaConfigBridge.java) provides the MaLiLib screen.
 
-[GitHub Actions](.github/workflows/build.yml) 只会通过 **Run workflow** 手动启动。选择要构建的分支后，工作流检查该分支最新提交的标题并构建 JAR；在 `main` 上成功运行时，还会为新版本发布 Release。运行通过表示最新提交格式与编译检查通过；游戏内效果仍需实际装置验证。
+[GitHub Actions](.github/workflows/build.yml) runs only when started manually with **Run workflow**. Select the branch to build; the workflow checks its latest commit subject and builds the JAR. A successful run on `main` also publishes a Release for a new version. A passing run confirms the latest commit format and build; visual behavior still needs in-game verification.
 
-## 发布流程
+## Release process
 
-1. 在 `gradle.properties` 中更新 `mod_version`，例如 `1.0.0`。
-2. 新建对应的 `release-notes/1.0.0.md`，首行写 `# TickWeave 1.0.0`，其余内容填写该版本的发布与修改说明。
-3. 将代码和说明推送到 `main`，然后选择 `main` 手动运行 [GitHub Actions](.github/workflows/build.yml)。构建成功后，CI 会把可安装 JAR 发布到 GitHub Release，并用版本号本身作为标签（例如 `1.0.0`）。
+1. Update `mod_version` in `gradle.properties`, for example to `1.0.0`.
+2. Add `release-notes/1.0.0.md`. Its first line must be `# TickWeave 1.0.0`; describe what the version adds and changes below it.
+3. Push the code and notes to `main`, then select `main` and manually run [GitHub Actions](.github/workflows/build.yml). After a successful build, CI publishes the installable JAR to GitHub Releases with the version number itself as the tag, such as `1.0.0`.
 
-同一版本只发布一次；后续手动运行仍会构建，但不会覆盖已经发布的 Release。发布下一版时需再次更新版本号并新增对应说明文件。当前版本的说明见 [0.6.0 发布说明](release-notes/0.6.0.md)。
+Each version is published once. Later manual runs still build but do not overwrite an existing Release. To publish another version, update the version number and add its notes file. See the [0.6.1 release notes](release-notes/0.6.1.md) for the current 26.2 build.
 
-## 贡献与提交格式
+## Contributing and commit format
 
-**每条提交标题必须采用 `表情 Type: 简短说明` 格式。** 表情、英文类型的大小写、冒号和冒号后的一个空格都必须与下面一致；说明不能为空。允许的前缀：
+**Every commit subject must use the format `Emoji Type: Short description`.** The emoji, capitalization, colon, and single space after the colon must match one of these prefixes; the description cannot be empty:
 
-- `➕ Feat: ` 新功能
-- `🚧 Fix: ` 缺陷修复
-- `📝 Docs: ` 文档修改
-- `♻️ Refactor: ` 不改变行为的重构
-- `🧪 Test: ` 测试
-- `🔧 Chore: ` 日常维护
-- `🏗️ Build: ` 构建和依赖
-- `👷 CI: ` 持续集成
-- `⚡ Perf: ` 性能优化
+- `➕ Feat: ` New feature
+- `🚧 Fix: ` Bug fix
+- `📝 Docs: ` Documentation
+- `♻️ Refactor: ` Refactoring without behavior changes
+- `🧪 Test: ` Tests
+- `🔧 Chore: ` Maintenance
+- `🏗️ Build: ` Build or dependencies
+- `👷 CI: ` Continuous integration
+- `⚡ Perf: ` Performance
 
-正确示例：
+Valid examples:
 
 ```text
-➕ Feat: 添加红石线深度标签
-🚧 Fix: 修复活塞事件顺序显示
-📝 Docs: 更新安装与使用说明
+➕ Feat: Add redstone dust depth labels
+🚧 Fix: Correct piston event order display
+📝 Docs: Update installation instructions
 ```
 
-`feat: ...`、`Fix: ...`、`➕ feat: ...` 等格式都不符合要求。手动运行 CI 时会检查所选分支的**最新一条提交标题**。合并 Pull Request 时请让最终提交标题也符合该规则；自动生成的普通 merge commit 标题可能无法通过检查。
 
-## 许可协议
+Subjects such as `feat: ...`, `Fix: ...`, or `➕ feat: ...` fail the check. A manual CI run checks the **latest commit subject** on the selected branch. When merging a pull request, use a compliant final commit subject too; a default merge-commit subject may fail the check.
 
-本项目采用 **MIT License**。完整条款见 [LICENSE](LICENSE)。
+## License
+
+TickWeave is licensed under the **MIT License**. See [LICENSE](LICENSE) for the full text.

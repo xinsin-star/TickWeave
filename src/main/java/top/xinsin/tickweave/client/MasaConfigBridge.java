@@ -82,7 +82,7 @@ public final class MasaConfigBridge implements IConfigHandler, IKeybindProvider 
         INSTANCE.toggleKey.getKeybind().setCallback((action, key) -> { TickWeaveClient.toggleEnabled(); return true; });
         INSTANCE.previousKey.getKeybind().setCallback((action, key) -> { TickWeaveClient.previousTick(); return true; });
         INSTANCE.nextKey.getKeybind().setCallback((action, key) -> { TickWeaveClient.nextTick(); return true; });
-        INSTANCE.configKey.getKeybind().setCallback((action, key) -> { open(Minecraft.getInstance().screen); return true; });
+        INSTANCE.configKey.getKeybind().setCallback((action, key) -> { open(Minecraft.getInstance().gui.screen()); return true; });
         ConfigManager.getInstance().registerConfigHandler(MOD_ID, INSTANCE);
         InputEventHandler.getKeybindManager().registerKeybindProvider(INSTANCE);
         Registry.CONFIG_SCREEN.registerConfigScreenFactory(new ModInfo(MOD_ID, "TickWeave", () -> createScreen(null)));
